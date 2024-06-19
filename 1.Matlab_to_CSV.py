@@ -7,8 +7,9 @@ import re
 from sklearn.impute import KNNImputer
 
 # Set directories
-directory = "/home/david/bioinformatica/Pruebas/Biomarcadores_multilead/"
-output_directory = "/home/david/bioinformatica/Pruebas/Biomarcadores_multilead_clean_data/"
+in_directory = "/home/david/bioinformatica/Pruebas/Biomarcadores_multilead/"
+out_directory = "/home/david/bioinformatica/Pruebas/Biomarcadores_multilead_clean_data/"
+
 
 def matlab_to_csv(directory, output_directory):
     """"Transform the matlab file into CSV file"""
@@ -41,7 +42,8 @@ def matlab_to_csv(directory, output_directory):
         output_csv_filepath = os.path.join(output_directory, output_csv_filename)
         biomarkers_df.to_csv(output_csv_filepath, decimal=',', index=False)
 
-def Process_and_impute_data(filepath):
+
+def process_and_impute_data(filepath):
     """Clean the data of infinities NAN and impute the missing values"""
     # Compute percentages of NAN values per column grouping by lead
     data_frame = pd.read_csv(filepath, decimal=',')
@@ -68,8 +70,8 @@ def Process_and_impute_data(filepath):
     data_frame.insert(0, 'BH', file_number)
 
     # Add the condition of the patients, 1 for Symptomatic and 0 for Asymptomatic
-    if file_number in [3, 23, 24, 29, 33, 44, 46, 98, 99, 101, 111, 122, 123, 126, 131, 132, 135, 139, 143, 148, 169,
-                       185]:
+    if file_number in [3, 23, 29, 33, 44, 46, 98, 99, 101, 111, 122, 123, 126, 131, 132, 135, 143, 148, 156, 158, 169,
+                       172, 183, 185]:
         data_frame.insert(1, 'Symptomatic', 1)
     else:
         data_frame.insert(1, 'Symptomatic', 0)
@@ -81,10 +83,11 @@ def Process_and_impute_data(filepath):
 
     data_frame.to_csv(filepath, decimal=',', index=False)
 
-matlab_to_csv(directory, output_directory)
 
-for filename in os.listdir(output_directory):
-    csv_filepath = os.path.join(output_directory, filename)
-    Process_and_impute_data(csv_filepath)
+matlab_to_csv(in_directory, out_directory)
+
+for filename in os.listdir(out_directory):
+    csv_filepath = os.path.join(out_directory, filename)
+    process_and_impute_data(csv_filepath)
 
 print("Imputation Done")
